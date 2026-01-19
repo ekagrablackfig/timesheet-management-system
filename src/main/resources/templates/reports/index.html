@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+
+<head>
+    <title>Reports</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <div class="page-header">
+            <h1 class="h3 mb-0">System Reports</h1>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <!-- Project Effort Card -->
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Project Effort <small class="text-muted fw-normal">(Total Hours)</small></h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Project</th>
+                                    <th class="text-end">Total Hours</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="stat : ${projectStats}">
+                                    <td class="fw-medium" th:text="${stat[0]}">Project</td>
+                                    <td class="text-end fw-bold" th:text="${stat[1]}">100.0</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(projectStats)}">
+                                    <td colspan="2" class="text-center py-3 text-muted">No data available.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Overview Card -->
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Status Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="text-muted small text-uppercase fw-bold">Total Timesheets</div>
+                            <div class="display-6 fw-bold text-primary" th:text="${allTimesheets.size()}">0</div>
+                        </div>
+                        <hr class="border-light my-3">
+                        <div class="row row-cols-2 g-3">
+                            <div class="col" th:each="entry : ${statusCounts}">
+                                <div class="p-2 border rounded bg-light">
+                                    <div class="small fw-bold text-muted mb-1" th:text="${entry.key}">DRAFT</div>
+                                    <div class="h5 mb-0" th:text="${entry.value}">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full List -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Full Timesheet Log</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 table-sm text-nowrap">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Period Start</th>
+                            <th>Status</th>
+                            <th>Pending Approver</th>
+                            <th>Actual Approver</th>
+                            <th>Rejection Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="t : ${allTimesheets}">
+                            <td class="text-muted small" th:text="${t.id}"></td>
+                            <td class="fw-medium" th:text="${t.user.username}"></td>
+                            <td th:text="${t.periodStartDate}"></td>
+                            <td>
+                                <span class="status-badge" th:classappend="${'status-' + t.status.name().toLowerCase()}"
+                                    th:text="${t.status}">STATUS</span>
+                            </td>
+                            <td class="text-muted small" th:text="${t.approver != null ? t.approver.username : '-'}">
+                            </td>
+                            <td class="text-muted small"
+                                th:text="${t.actualApprover != null ? t.actualApprover.username : '-'}"></td>
+                            <td class="text-danger small" th:text="${t.rejectionReason}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(allTimesheets)}">
+                            <td colspan="7" class="text-center py-4 text-muted">No records found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

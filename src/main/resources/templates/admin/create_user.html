@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+
+<head>
+    <title>Create User</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="card shadow-md border-0">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h4 class="mb-0 fs-5"><i class="bi bi-person-plus me-2"></i> Create User</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/admin/users/create}" method="post" th:object="${user}">
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-bold">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label fw-bold">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="role" class="form-label fw-bold">Role</label>
+                                <select class="form-select" id="role" name="role">
+                                    <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="manager" class="form-label fw-bold">Manager <span
+                                        class="text-muted fw-normal">(Optional)</span></label>
+                                <select class="form-select" id="manager" name="manager">
+                                    <option value="">None</option>
+                                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.username}"></option>
+                                </select>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Save User</button>
+                                <a href="/admin/users" class="btn btn-light text-muted">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head}"></head>
+
+<body>
+    <nav th:replace="~{fragments :: nav}"></nav>
+
+    <main class="container py-4">
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorMessage}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 mb-4">
+                <div class="list-group shadow-sm sticky-top" style="top: 2rem; z-index: 1;">
+                    <div class="list-group-item bg-light fw-bold text-uppercase small text-muted">
+                        My Timesheets
+                    </div>
+                    <a href="/timesheets"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                        th:classappend="${currentStatus == null} ? 'active border-primary' : ''">
+                        All
+                        <i class="bi bi-chevron-right small text-muted" th:unless="${currentStatus == null}"></i>
+                    </a>
+                    <a href="/timesheets?status=DRAFT"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                        th:classappend="${currentStatus?.name() == 'DRAFT'} ? 'active border-primary' : ''">
+                        Drafts
+                        <i class="bi bi-chevron-right small text-muted"
+                            th:unless="${currentStatus?.name() == 'DRAFT'}"></i>
+                    </a>
+                    <a href="/timesheets?status=SUBMITTED"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                        th:classappend="${currentStatus?.name() == 'SUBMITTED'} ? 'active border-primary' : ''">
+                        Pending Approval
+                        <i class="bi bi-chevron-right small text-muted"
+                            th:unless="${currentStatus?.name() == 'SUBMITTED'}"></i>
+                    </a>
+                    <a href="/timesheets?status=REJECTED"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                        th:classappend="${currentStatus?.name() == 'REJECTED'} ? 'active border-primary' : ''">
+                        Rejected
+                        <i class="bi bi-chevron-right small text-muted"
+                            th:unless="${currentStatus?.name() == 'REJECTED'}"></i>
+                    </a>
+                    <a href="/timesheets?status=APPROVED"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                        th:classappend="${currentStatus?.name() == 'APPROVED'} ? 'active border-primary' : ''">
+                        Approved
+                        <i class="bi bi-chevron-right small text-muted"
+                            th:unless="${currentStatus?.name() == 'APPROVED'}"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9">
+
+                <div class="page-header d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <h1 class="h3 mb-0">
+                        <span
+                            th:text="${currentStatus != null ? #strings.capitalize(#strings.toLowerCase(currentStatus)) : 'All'}"></span>
+                        Timesheets
+                    </h1>
+                    <div>
+                        <a href="/timesheets/export" class="btn btn-outline-success btn-sm me-2">
+                            <i class="bi bi-download"></i> Export CSV
+                        </a>
+                        <a href="/timesheets/create" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-lg"></i> New
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Approver Section: Pending Approvals (Only visible to Approvers) -->
+                <div th:if="${pendingTimesheets != null and !pendingTimesheets.empty}"
+                    class="card mb-4 shadow-sm border-warning">
+                    <div class="card-header bg-warning-subtle text-warning-emphasis fw-bold">
+                        <i class="bi bi-check-circle me-2"></i> Pending Approvals (Action Required)
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Period Start</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="ts : ${pendingTimesheets}">
+                                    <td class="fw-medium" th:text="${ts.user.username}">user</td>
+                                    <td th:text="${ts.periodStartDate}">2023-01-01</td>
+                                    <td><span class="status-badge status-submitted"
+                                            th:text="${ts.status}">SUBMITTED</span></td>
+                                    <td class="text-end">
+                                        <a th:href="@{'/timesheets/' + ${ts.id}}"
+                                            class="btn btn-primary btn-sm px-3">Review</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Delegation Section -->
+                <div class="card mb-4 shadow-sm" sec:authorize="hasAnyAuthority('ROLE_APPROVER', 'ROLE_ADMIN')">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 h6">Approval Delegation</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/timesheets/delegate}" method="post" class="row g-3 align-items-end">
+                            <div class="col-md-5">
+                                <label for="delegateId"
+                                    class="form-label small text-muted text-uppercase fw-bold">Delegate
+                                    To</label>
+                                <select class="form-select" id="delegateId" name="delegateId">
+                                    <option value="">Select Delegate / None</option>
+                                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.username}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="expiryDate"
+                                    class="form-label small text-muted text-uppercase fw-bold">Expiry
+                                    Date</label>
+                                <input type="date" class="form-control" id="expiryDate" name="expiryDate">
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-outline-secondary w-100">Update Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- My Timesheets List -->
+                <div class="card shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th sec:authorize="hasAuthority('ROLE_ADMIN')">User</th>
+                                    <th>Week Starting</th>
+                                    <th>Status</th>
+                                    <th>Approver</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="ts : ${timesheets}">
+                                    <td class="text-muted small" th:text="${'#' + ts.id}">1</td>
+                                    <td sec:authorize="hasAuthority('ROLE_ADMIN')" class="text-primary fw-bold"
+                                        th:text="${ts.user.username}">user</td>
+                                    <td class="fw-medium" th:text="${ts.periodStartDate}">2023-01-01</td>
+                                    <td>
+                                        <span class="status-badge"
+                                            th:classappend="${'status-' + ts.status.name().toLowerCase()}"
+                                            th:text="${ts.status}">DRAFT</span>
+                                    </td>
+                                    <td th:text="${ts.approver?.username ?: '-'}">manager</td>
+                                    <td class="text-end">
+                                        <a th:href="@{'/timesheets/' + ${ts.id}}"
+                                            class="btn btn-outline-primary btn-sm">View</a>
+                                        <!-- Delete Button (Icon only) -->
+                                        <form th:if="${ts.status.name() == 'DRAFT'}"
+                                            th:action="@{'/timesheets/' + ${ts.id} + '/delete'}" method="post"
+                                            class="d-inline" onsubmit="return confirm('Delete this draft?');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm border-0"
+                                                title="Delete Draft">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(timesheets)}">
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <div class="mb-2">No timesheets found.</div>
+                                        <div th:if="${currentStatus != null}">Try selecting 'All' or a different filter.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

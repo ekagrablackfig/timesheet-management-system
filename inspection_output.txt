@@ -1,0 +1,316 @@
+=== Inspecting: Timesheet Management System.xlsx ===
+
+Total Sheets: 9
+Sheet Names: Actors, HIGH-LEVEL USE CASES, DETAILED USE CASES, RELATIONAL USE CASES, FUNCTIONAL REQ, NON-FUNC REQ, RISKS & DEPENDENCIES, SPRINT PLAN, TOOLS
+
+----------------------------------------
+Sheet: 'Actors'
+Dimensions: 14 rows, 6 columns
+
+Columns and Data Types:
+Unnamed: 0                             float64
+        TimeSheet management System     object
+Unnamed: 2                             float64
+Unnamed: 3                              object
+Unnamed: 4                              object
+Unnamed: 5                              object
+dtype: object
+
+Sample Data (First 5 rows):
+   Unnamed: 0  ...                               Unnamed: 5
+0         NaN  ...                                      NaN
+1         NaN  ...                                      NaN
+2         NaN  ...                                      NaN
+3         NaN  ...   Regular employee submitting work hours
+4         NaN  ...           Can only access own timesheets
+
+[5 rows x 6 columns]
+
+Null Values per Column:
+Unnamed: 0                             14
+        TimeSheet management System    13
+Unnamed: 2                             11
+Unnamed: 3                             10
+Unnamed: 4                              5
+Unnamed: 5                              5
+dtype: int64
+
+
+----------------------------------------
+Sheet: 'HIGH-LEVEL USE CASES'
+Dimensions: 87 rows, 10 columns
+
+Columns and Data Types:
+Unnamed: 0                             float64
+        TimeSheet management System     object
+Unnamed: 2                             float64
+Unnamed: 3                              object
+Unnamed: 4                              object
+Unnamed: 5                              object
+Unnamed: 6                             float64
+Unnamed: 7                             float64
+Unnamed: 8                             float64
+Unnamed: 9                              object
+dtype: object
+
+Sample Data (First 5 rows):
+   Unnamed: 0         TimeSheet management System  ...  Unnamed: 8 Unnamed: 9
+0         NaN                                 NaN  ...         NaN        NaN
+1         NaN             2- HIGH-LEVEL USE CASES  ...         NaN        NaN
+2         NaN                                 NaN  ...         NaN        NaN
+3         2.0                                 NaN  ...         NaN        NaN
+4         NaN                                 NaN  ...         NaN        NaN
+
+[5 rows x 10 columns]
+
+Null Values per Column:
+Unnamed: 0                             86
+        TimeSheet management System    86
+Unnamed: 2                             84
+Unnamed: 3                             84
+Unnamed: 4                             73
+Unnamed: 5                             73
+Unnamed: 6                             87
+Unnamed: 7                             87
+Unnamed: 8                             87
+Unnamed: 9                             86
+dtype: int64
+
+
+----------------------------------------
+Sheet: 'DETAILED USE CASES'
+Dimensions: 72 rows, 8 columns
+
+Columns and Data Types:
+Unnamed: 0                             float64
+        TimeSheet management System     object
+Unnamed: 2                              object
+Unnamed: 3                              object
+Unnamed: 4                              object
+Unnamed: 5                              object
+Unnamed: 6                              object
+Unnamed: 7                              object
+dtype: object
+
+Sample Data (First 5 rows):
+   Unnamed: 0  ...                                         Unnamed: 7
+0         NaN  ...                                                NaN
+1         NaN  ...                                                NaN
+2         NaN  ...                                                NaN
+3         3.0  ...  Allows a User to create a new timesheet for a ...
+4         NaN  ...                                                NaN
+
+[5 rows x 8 columns]
+
+Null Values per Column:
+Unnamed: 0                             71
+        TimeSheet management System    71
+Unnamed: 2                             68
+Unnamed: 3                             68
+Unnamed: 4                             51
+Unnamed: 5                             51
+Unnamed: 6                             27
+Unnamed: 7                             27
+dtype: int64
+
+
+----------------------------------------
+Sheet: 'RELATIONAL USE CASES'
+Dimensions: 10 rows, 8 columns
+
+Columns and Data Types:
+Unnamed: 0                             float64
+        TimeSheet management System     object
+Unnamed: 2                              object
+Unnamed: 3                              object
+Unnamed: 4                              object
+Unnamed: 5                              object
+Unnamed: 6                              object
+Unnamed: 7                              object
+dtype: object
+
+Sample Data (First 5 rows):
+   Unnamed: 0  ...                    Unnamed: 7
+0         NaN  ...                           NaN
+1         NaN  ...                           NaN
+2         NaN  ...                           NaN
+3         4.0  ...  Dependency: refer to 3B → 3C
+4         NaN  ...                           NaN
+
+[5 rows x 8 columns]
+
+Null Values per Column:
+Unnamed: 0                             9
+        TimeSheet management System    9
+Unnamed: 2                             9
+Unnamed: 3                             9
+Unnamed: 4                             6
+Unnamed: 5                             6
+Unnamed: 6                             6
+Unnamed: 7                             6
+dtype: int64
+
+
+----------------------------------------
+Sheet: 'FUNCTIONAL REQ'
+Dimensions: 22 rows, 8 columns
+
+Columns and Data Types:
+Unnamed: 0                             float64
+        TimeSheet management System     object
+Unnamed: 2                              object
+Unnamed: 3                              object
+Unnamed: 4                              object
+Unnamed: 5                              object
+Unnamed: 6                              object
+Unnamed: 7                              object
+dtype: object
+
+Sample Data (First 5 rows):
+   Unnamed: 0         TimeSheet management System  ... Unnamed: 6 Unnamed: 7
+0         NaN                                 NaN  ...        NaN        NaN
+1         NaN          5- FUNCTIONAL REQUIREMENTS  ...        NaN        NaN
+2         NaN                                 NaN  ...        NaN        NaN
+3         5.0                                 NaN  ...        NaN        NaN
+4         NaN                                 NaN  ...        NaN        NaN
+
+[5 rows x 8 columns]
+
+Null Values per Column:
+Unnamed: 0                             21
+        TimeSheet management System    21
+Unnamed: 2                             18
+Unnamed: 3                             18
+Unnamed: 4                             12
+Unnamed: 5                             12
+Unnamed: 6                             15
+Unnamed: 7                             15
+dtype: int64
+
+
+----------------------------------------
+Sheet: 'NON-FUNC REQ'
+Dimensions: 15 rows, 6 columns
+
+Columns and Data Types:
+Unnamed: 0                             float64
+        TimeSheet management System     object
+Unnamed: 2                             float64
+Unnamed: 3                              object
+Unnamed: 4                              object
+Unnamed: 5                              object
+dtype: object
+
+Sample Data (First 5 rows):
+   Unnamed: 0  ...                      Unnamed: 5
+0         NaN  ...                             NaN
+1         NaN  ...                             NaN
+2         NaN  ...                             NaN
+3         6.0  ...           Page load < 3 seconds
+4         NaN  ...  Report generation < 10 seconds
+
+[5 rows x 6 columns]
+
+Null Values per Column:
+Unnamed: 0                             14
+        TimeSheet management System    14
+Unnamed: 2                             11
+Unnamed: 3                             11
+Unnamed: 4                              6
+Unnamed: 5                              6
+dtype: int64
+
+
+----------------------------------------
+Sheet: 'RISKS & DEPENDENCIES'
+Dimensions: 26 rows, 6 columns
+
+Columns and Data Types:
+Unnamed: 0                             float64
+        TimeSheet management System     object
+Unnamed: 2                             float64
+Unnamed: 3                              object
+Unnamed: 4                              object
+Unnamed: 5                              object
+dtype: object
+
+Sample Data (First 5 rows):
+   Unnamed: 0  ...                          Unnamed: 5
+0         NaN  ...                                 NaN
+1         NaN  ...                                 NaN
+2         NaN  ...                                 NaN
+3         7.0  ...           Dynamic fields complexity
+4         NaN  ...  Performance degradation in reports
+
+[5 rows x 6 columns]
+
+Null Values per Column:
+Unnamed: 0                             24
+        TimeSheet management System    24
+Unnamed: 2                             21
+Unnamed: 3                             21
+Unnamed: 4                             19
+Unnamed: 5                             18
+dtype: int64
+
+
+----------------------------------------
+Sheet: 'SPRINT PLAN'
+Dimensions: 19 rows, 6 columns
+
+Columns and Data Types:
+        TimeSheet management System     object
+Unnamed: 1                              object
+Unnamed: 2                              object
+Unnamed: 3                             float64
+Unnamed: 4                             float64
+Unnamed: 5                              object
+dtype: object
+
+Sample Data (First 5 rows):
+          TimeSheet management System  ... Unnamed: 5
+0                                 NaN  ...        NaN
+1      10- Sprint Plan & Deliverables  ...        NaN
+2                                 NaN  ...        NaN
+3                                 NaN  ...        NaN
+4                                 NaN  ...        NaN
+
+[5 rows x 6 columns]
+
+Null Values per Column:
+        TimeSheet management System    18
+Unnamed: 1                             14
+Unnamed: 2                              7
+Unnamed: 3                             19
+Unnamed: 4                             10
+Unnamed: 5                             10
+dtype: int64
+
+
+----------------------------------------
+Sheet: 'TOOLS'
+Dimensions: 9 rows, 3 columns
+
+Columns and Data Types:
+        TimeSheet management System    float64
+Unnamed: 1                              object
+Unnamed: 2                              object
+dtype: object
+
+Sample Data (First 5 rows):
+           TimeSheet management System  ...                         Unnamed: 2
+0                                  NaN  ...                                NaN
+1                                  NaN  ...                                NaN
+2                                  NaN  ...                                NaN
+3                                  NaN  ...                Java + Spring Boot 
+4                                  NaN  ...  Thymeleaf (server-side rendered) 
+
+[5 rows x 3 columns]
+
+Null Values per Column:
+        TimeSheet management System    9
+Unnamed: 1                             2
+Unnamed: 2                             3
+dtype: int64
+
+

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head}">
+    <style>
+        .nav-tabs .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        .table-grid th {
+            background-color: #0d6efd;
+            color: white;
+            font-size: 0.85rem;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table-grid td {
+            padding: 0;
+            vertical-align: middle;
+        }
+
+        .table-grid input.form-control {
+            border: none;
+            border-radius: 0;
+            text-align: right;
+        }
+
+        .table-grid input.form-control:focus {
+            box-shadow: inset 0 0 0 2px #0d6efd;
+            z-index: 10;
+        }
+
+        .table-grid select.form-select {
+            border: none;
+            border-radius: 0;
+        }
+
+        .total-col {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            text-align: right;
+            padding-right: 0.75rem !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav th:replace="~{fragments :: nav}"></nav>
+
+    <main class="container-fluid px-4 py-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">Create New Timesheet</h1>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" onclick="submitGrid()">Save changes</button>
+                <a href="/timesheets" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-0" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button"
+                    role="tab">General Info</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details"
+                    type="button" role="tab">Timesheet Details</button>
+            </li>
+
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content border border-top-0 p-4 bg-white shadow-sm" id="myTabContent">
+
+            <!-- General Info Tab -->
+            <div class="tab-pane fade" id="general" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th class="w-25">User:</th>
+                                <td th:text="${timesheet.user.username}"></td>
+                            </tr>
+                            <tr>
+                                <th>Week Starting:</th>
+                                <td th:text="${timesheet.periodStartDate}"></td>
+                            </tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    <span class="badge"
+                                        th:classappend="${'bg-' + (timesheet.status.name() == 'APPROVED' ? 'success' : (timesheet.status.name() == 'REJECTED' ? 'danger' : 'secondary'))}"
+                                        th:text="${timesheet.status}"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timesheet Details Tab (Grid) -->
+            <div class="tab-pane fade show active" id="details" role="tabpanel">
+                <div class="mb-3 fw-bold text-muted">
+                    Weekly hours total: <span id="grandTotal">0.0</span>
+                </div>
+
+                <form id="gridForm" th:action="@{'/timesheets/' + ${timesheet.id} + '/grid'}" method="post">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-grid mb-0" id="timeGrid">
+                            <thead>
+                                <tr>
+                                    <th style="width: 200px;">Project</th>
+                                    <th style="width: 150px;">Category</th>
+                                    <th style="width: 150px;">Task Key</th>
+                                    <th>Task Details</th>
+                                    <!-- Dynamic Days -->
+                                    <th style="width: 60px;" th:each="i : ${#numbers.sequence(0, 6)}"
+                                        th:text="${#temporals.format(timesheet.periodStartDate.plusDays(i), 'EE dd/MM')}">
+                                        Mon</th>
+                                    <th style="width: 70px;">Total</th>
+                                    <th style="width: 40px;"
+                                        th:if="${timesheet.status.name() == 'DRAFT' || timesheet.status.name() == 'REJECTED'}">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rows generated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm mt-3" onclick="addRow()"
+                        th:if="${timesheet.status.name() == 'DRAFT' || timesheet.status.name() == 'REJECTED'}">
+                        <i class="bi bi-plus-lg"></i> Add Row
+                    </button>
+
+                    <!-- Hidden inputs handling -->
+                    <div id="hiddenInputsContainer"></div>
+                </form>
+
+                <div class="mt-4 text-muted small">
+                    Notice: use dot (.) as decimal separator
+                </div>
+
+                <!-- Workflow Actions (Submit, etc) -->
+                <div class="mt-4 pt-3 border-top"
+                    th:if="${timesheet.status.name() == 'DRAFT' || timesheet.status.name() == 'REJECTED'}">
+                    <form th:action="@{'/timesheets/' + ${timesheet.id} + '/submit'}" method="post">
+                        <button type="submit" class="btn btn-success">Submit for Approval</button>
+                    </form>
+                </div>
+
+                <!-- Approval Actions (APPROVER/ADMIN only, when SUBMITTED) -->
+                <div class="mt-4 pt-3 border-top" th:if="${timesheet.status.name() == 'SUBMITTED'}"
+                    sec:authorize="hasAnyAuthority('ROLE_APPROVER', 'ROLE_ADMIN')">
+                    <div class="d-flex gap-2">
+                        <form th:action="@{'/timesheets/' + ${timesheet.id} + '/approve'}" method="post">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-lg"></i> Approve
+                            </button>
+                        </form>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="collapse"
+                            data-bs-target="#rejectCollapse">
+                            <i class="bi bi-x-lg"></i> Reject
+                        </button>
+                    </div>
+                    <div class="collapse mt-3" id="rejectCollapse">
+                        <form th:action="@{'/timesheets/' + ${timesheet.id} + '/reject'}" method="post"
+                            class="card card-body bg-light">
+                            <label for="reason" class="form-label fw-bold">Rejection Reason:</label>
+                            <textarea name="reason" id="reason" rows="2" class="form-control mb-2" required
+                                placeholder="Please provide a reason..."></textarea>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-danger btn-sm">Confirm Rejection</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Rejection Message -->
+                <div class="alert alert-danger mt-3"
+                    th:if="${timesheet.status.name() == 'REJECTED' && timesheet.rejectionReason != null}">
+                    <strong>Rejected:</strong> <span th:text="${timesheet.rejectionReason}"></span>
+                </div>
+            </div>
+
+
+        </div>
+    </main>
+
+    <!-- Project Data for JS -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const projects = /*[[${projects}]]*/[];
+        const existingEntries = /*[[${timesheet.entries}]]*/[]; // Load existing flat entries
+        const isEditable = /*[[${timesheet.status.name() == 'DRAFT' || timesheet.status.name() == 'REJECTED'}]]*/ false; // Editable flag
+
+        // Extract project names and config for dropdowns
+        const projectOptions = projects.map(p => `<option value="${p.id}" data-config="${p.attributesConfig || ''}">${p.name}</option>`).join('');
+
+        // Mock Categories and Task Keys (In real app, these might come from Project config or API)
+        const categories = ["Coding", "Analysis", "Design", "Testing", "Meeting", "Support"];
+        const taskKeys = ["DEV", "BUG", "MEET", "SUP", "DOC"];
+
+        const categoryOptions = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+        const taskKeyOptions = taskKeys.map(k => `<option value="${k}">${k}</option>`).join('');
+
+        // Initialize state
+        let rowCount = 0;
+        const dayProps = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+        function addRow(data = null) {
+            const tbody = document.querySelector('#timeGrid tbody');
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-row-id', rowCount);
+
+            const disabledAttr = isEditable ? '' : 'disabled';
+            const bgClass = isEditable ? '' : 'bg-light';
+
+            // Safe values
+            const projectId = data ? data.projectId : '';
+            const category = data ? data.category : '';
+            const taskKey = data ? data.taskKey : '';
+            const taskDetails = data ? data.taskDetails : '';
+
+            tr.innerHTML = `
+                <td>
+                    <select class="form-select form-select-sm ${bgClass}" name="rows[${rowCount}].projectId" ${disabledAttr}>
+                        ${projectOptions}
+                    </select>
+                </td>
+                <td>
+                    <select class="form-select form-select-sm ${bgClass}" name="rows[${rowCount}].category" ${disabledAttr}>
+                        <option value="">-</option>
+                        ${categoryOptions}
+                    </select>
+                </td>
+                <td>
+                    <select class="form-select form-select-sm ${bgClass}" name="rows[${rowCount}].taskKey" ${disabledAttr}>
+                        <option value="">-</option>
+                        ${taskKeyOptions}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control form-control-sm ${bgClass}" 
+                           name="rows[${rowCount}].taskDetails" value="${taskDetails}" ${disabledAttr}>
+                </td>
+                ${dayProps.map((prop, idx) => {
+                const val = data ? (data[prop] || '') : '';
+                return `<td><input type="number" step="0.5" class="form-control form-control-sm day-input ${bgClass}" 
+                        name="rows[${rowCount}].${prop}" value="${val}" onchange="calcTotals()" ref-idx="${idx}" ${disabledAttr}></td>`;
+            }).join('')}
+                <td class="total-col row-total">0.0</td>
+                ${isEditable ? `
+                <td class="text-center">
+                    <button type="button" class="btn-close btn-sm" aria-label="Remove" onclick="removeRow(this)"></button>
+                </td>` : ''}
+            `;
+            tbody.appendChild(tr);
+
+            // Set Dropdown values if loading data
+            if (data) {
+                const pSelect = tr.querySelector(`select[name="rows[${rowCount}].projectId"]`);
+                if (pSelect) pSelect.value = projectId;
+
+                const cSelect = tr.querySelector(`select[name="rows[${rowCount}].category"]`);
+                if (cSelect) cSelect.value = category;
+
+                const kSelect = tr.querySelector(`select[name="rows[${rowCount}].taskKey"]`);
+                if (kSelect) kSelect.value = taskKey;
+
+                // Recalc row total immediately
+                let rowTotal = 0;
+                tr.querySelectorAll('.day-input').forEach(inp => rowTotal += parseFloat(inp.value) || 0);
+                tr.querySelector('.row-total').innerText = rowTotal.toFixed(1);
+            }
+
+            rowCount++;
+        }
+
+        function removeRow(btn) {
+            btn.closest('tr').remove();
+            calcTotals();
+        }
+
+        function calcTotals() {
+            let grandTotal = 0;
+            const rows = document.querySelectorAll('#timeGrid tbody tr');
+
+            rows.forEach(row => {
+                let rowTotal = 0;
+                const inputs = row.querySelectorAll('.day-input');
+                inputs.forEach(input => {
+                    const val = parseFloat(input.value) || 0;
+                    rowTotal += val;
+                });
+                row.querySelector('.row-total').innerText = rowTotal.toFixed(1);
+                grandTotal += rowTotal;
+            });
+
+            document.getElementById('grandTotal').innerText = grandTotal.toFixed(1);
+        }
+
+        window.addEventListener('load', () => {
+            if (existingEntries && existingEntries.length > 0) {
+                // Group flat entries into rows by (Project + Attributes)
+                // Unique Key: projectId + category + taskKey + taskDetails
+                const groups = {};
+
+                existingEntries.forEach(entry => {
+                    // Parse Attributes JSON safely
+                    let attrs = {};
+                    try { attrs = JSON.parse(entry.attributes || '{}'); } catch (e) { }
+
+                    const category = attrs.Category || '';
+                    const taskKey = attrs.TaskKey || '';
+                    const taskDetails = attrs.TaskDetails || '';
+                    const projectId = entry.project.id;
+
+                    const key = `${projectId}|${category}|${taskKey}|${taskDetails}`;
+
+                    if (!groups[key]) {
+                        groups[key] = {
+                            projectId: projectId,
+                            category: category,
+                            taskKey: taskKey,
+                            taskDetails: taskDetails,
+                            // Days array initialized to nulls
+                            mon: null, tue: null, wed: null, thu: null, fri: null, sat: null, sun: null
+                        };
+                    }
+
+                    // Determine day index (Mon=0...Sun=6)
+                    // entry.date is 'YYYY-MM-DD'. We need to find offset from PeriodStart
+                    // Since we don't have PeriodStart easily in JS loop without parsing string,
+                    // let's rely on standard DTO field mapping or just use index?
+                    // Actually simplest: entry.date is passed.
+                    // We know entries are within the week.
+                    // But JS Date parsing can be tricky with timezones.
+
+                    // Alternative: rely on the text content in table header? No.
+                    // Let's use Thymeleaf variable:
+                    const startDateStr = /*[[${timesheet.periodStartDate}]]*/ '2025-01-01';
+                    const periodStart = new Date(startDateStr);
+                    const entryDate = new Date(entry.date);
+
+                    // Calculate difference in days
+                    const diffTime = Math.abs(entryDate - periodStart);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    // Valid indices 0-6.
+
+                    // Map to props
+                    const props = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+                    if (diffDays >= 0 && diffDays <= 6) {
+                        groups[key][props[diffDays]] = entry.hours;
+                    }
+                });
+
+                // Render Rows
+                Object.values(groups).forEach(row => addRow(row));
+                calcTotals();
+
+            } else if (isEditable) {
+                // Determine if we should add an empty row. Only if editable and empty.
+                addRow();
+            }
+        });
+
+        function submitGrid() {
+            document.getElementById('gridForm').submit();
+        }
+
+        /*]]>*/
+    </script>
+
+    <!-- Redefine addRow to use correct DTO field names -->
+
+</body>
+
+</html>

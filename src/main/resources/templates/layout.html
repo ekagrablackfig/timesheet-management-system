@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+
+<head th:replace="~{fragments :: head}"></head>
+
+<body>
+    <nav th:replace="~{fragments :: nav}"></nav>
+    <main class="container py-4">
+        <div th:replace="${content}"></div>
+    </main>
+</body>
+
+</html>

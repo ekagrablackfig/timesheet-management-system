@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+
+<head>
+    <title>Create Project</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="card shadow-md border-0">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h4 class="mb-0 fs-5"><i class="bi bi-folder-plus me-2"></i> Create Project</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/admin/projects/create}" method="post" th:object="${project}">
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-bold">Project Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label fw-bold">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label for="attributesConfig" class="form-label fw-bold">Dynamic Fields Config</label>
+                                <input type="text" class="form-control" id="attributesConfig" name="attributesConfig"
+                                    placeholder="e.g. Location, Task Type, Ticket ID">
+                                <div class="form-text">Comma-separated list of extra fields users must fill out.</div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Save Project</button>
+                                <a href="/admin/projects" class="btn btn-light text-muted">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
